@@ -1,0 +1,6 @@
+{
+  "name": "Planche Express",
+  "description": "Générateur automatique de planches A4 pour cartes de visite prête à imprimer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
