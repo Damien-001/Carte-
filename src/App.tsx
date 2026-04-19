@@ -20,10 +20,11 @@ export default function App() {
   const [image, setImage] = useState<string | null>(null);
   const [settings, setSettings] = useState<CardSettings>({
     width: 85,
-    height: 55,
+    height: 50,
     margin: 10,
     spacing: 5,
     showCropMarks: true,
+    maxCards: 10,
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,8 +33,13 @@ export default function App() {
     const availableWidth = A4_WIDTH - (settings.margin * 2);
     const availableHeight = A4_HEIGHT - (settings.margin * 2);
 
-    const cols = Math.floor((availableWidth + settings.spacing) / (settings.width + settings.spacing));
-    const rows = Math.floor((availableHeight + settings.spacing) / (settings.height + settings.spacing));
+    const rawCols = Math.floor((availableWidth + settings.spacing) / (settings.width + settings.spacing));
+    const rawRows = Math.floor((availableHeight + settings.spacing) / (settings.height + settings.spacing));
+
+    // Maximum 10 cards total, ideally in a balanced way if possible
+    // But we prioritize the dimensions set by the user
+    const cols = rawCols;
+    const rows = rawRows;
 
     const totalWidth = cols * settings.width + (cols - 1) * settings.spacing;
     const totalHeight = rows * settings.height + (rows - 1) * settings.spacing;
@@ -42,7 +48,16 @@ export default function App() {
     const offsetY = (A4_HEIGHT - totalHeight) / 2;
 
     return { cols, rows, totalWidth, totalHeight, offsetX, offsetY };
-  }, [settings]);
+  }, [settings.width, settings.height, settings.margin, settings.spacing]);
+
+  const theoreticalMax = Math.min(10, grid.cols * grid.rows);
+
+  // Sync maxCards if it exceeds theoreticalMax or is initialized too high
+  useMemo(() => {
+    if (settings.maxCards > theoreticalMax || settings.maxCards === 0) {
+      setSettings(prev => ({ ...prev, maxCards: theoreticalMax }));
+    }
+  }, [theoreticalMax]);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,9 +86,12 @@ export default function App() {
       });
 
       const { cols, rows, offsetX, offsetY } = grid;
+      let cardCount = 0;
 
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
+          if (cardCount >= settings.maxCards) break;
+          
           const x = offsetX + c * (settings.width + settings.spacing);
           const y = offsetY + r * (settings.height + settings.spacing);
 
@@ -98,7 +116,10 @@ export default function App() {
             pdf.line(x + settings.width + 0.5, y, x + settings.width + markLen, y); // right top
             pdf.line(x + settings.width + 0.5, y + settings.height, x + settings.width + markLen, y + settings.height); // right bottom
           }
+          
+          cardCount++;
         }
+        if (cardCount >= settings.maxCards) break;
       }
 
       pdf.save('planche-cartes-visite.pdf');
@@ -167,6 +188,23 @@ export default function App() {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-gray-600">Nb de cartes</label>
+              <input 
+                type="number" 
+                min={1}
+                max={theoreticalMax}
+                value={settings.maxCards}
+                onChange={(e) => setSettings({...settings, maxCards: Math.min(theoreticalMax, Math.max(1, Number(e.target.value)))})}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5 justify-end">
+              <span className="text-[10px] font-bold text-gray-400 mb-1 uppercase tracking-tighter">Max: {theoreticalMax}</span>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2 mt-2">
             <input 
               type="checkbox" 
@@ -219,7 +257,7 @@ export default function App() {
            <div className="bg-blue-50 p-4 rounded-lg mb-4 flex gap-3">
               <AlertCircle className="text-blue-500 shrink-0" size={18} />
               <p className="text-xs text-blue-700 leading-relaxed">
-                <span className="font-bold">Optimisation :</span> {grid.cols * grid.rows} cartes par planche.
+                <span className="font-bold">Optimisation :</span> {settings.maxCards} cartes sur cette planche (Max possible: {theoreticalMax}).
               </p>
            </div>
 
@@ -279,7 +317,7 @@ export default function App() {
             {Array.from({ length: grid.cols * grid.rows }).map((_, i) => (
               <div 
                 key={i} 
-                className="relative bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden"
+                className={`relative bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden transition-opacity duration-300 ${i >= settings.maxCards ? 'opacity-0' : 'opacity-100'}`}
               >
                 {image ? (
                   <img 
