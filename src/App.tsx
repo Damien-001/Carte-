@@ -18,11 +18,12 @@ const A4_HEIGHT = 297;
 
 export default function App() {
   const [image, setImage] = useState<string | null>(null);
+  // Internal values are in mm; UI displays cm (÷10)
   const [settings, setSettings] = useState<CardSettings>({
-    width: 85,
-    height: 50,
-    margin: 10,
-    spacing: 5,
+    width: 85,   // 8.5 cm
+    height: 55,  // 5.5 cm
+    margin: 10,  // 1 cm
+    spacing: 5,  // 0.5 cm
     showCropMarks: true,
     maxCards: 10,
   });
@@ -148,20 +149,22 @@ export default function App() {
           
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Largeur (mm)</label>
+              <label className="text-sm font-medium text-gray-600">Largeur (cm)</label>
               <input 
-                type="number" 
-                value={settings.width}
-                onChange={(e) => setSettings({...settings, width: Number(e.target.value)})}
+                type="number"
+                step="0.1"
+                value={+(settings.width / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, width: Math.round(Number(e.target.value) * 10)})}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Hauteur (mm)</label>
+              <label className="text-sm font-medium text-gray-600">Hauteur (cm)</label>
               <input 
-                type="number" 
-                value={settings.height}
-                onChange={(e) => setSettings({...settings, height: Number(e.target.value)})}
+                type="number"
+                step="0.1"
+                value={+(settings.height / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, height: Math.round(Number(e.target.value) * 10)})}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
@@ -169,20 +172,22 @@ export default function App() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Marge (mm)</label>
+              <label className="text-sm font-medium text-gray-600">Marge (cm)</label>
               <input 
-                type="number" 
-                value={settings.margin}
-                onChange={(e) => setSettings({...settings, margin: Number(e.target.value)})}
+                type="number"
+                step="0.1"
+                value={+(settings.margin / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, margin: Math.round(Number(e.target.value) * 10)})}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Espacement (mm)</label>
+              <label className="text-sm font-medium text-gray-600">Espacement (cm)</label>
               <input 
-                type="number" 
-                value={settings.spacing}
-                onChange={(e) => setSettings({...settings, spacing: Number(e.target.value)})}
+                type="number"
+                step="0.1"
+                value={+(settings.spacing / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, spacing: Math.round(Number(e.target.value) * 10)})}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
