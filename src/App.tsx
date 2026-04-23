@@ -25,8 +25,9 @@ export default function App() {
   const [settings, setSettings] = useState<CardSettings>({
     width: 86,   // 8.6 cm
     height: 56,  // 5.6 cm
-    margin: 0,   // 0 cm — no margin needed to fit 5 rows
-    spacing: 3,  // 0.3 cm
+    margin: 0,   // 0 cm
+    spacingX: 3, // 0.3 cm — entre colonnes
+    spacingY: 3, // 0.3 cm — entre rangées
     showCropMarks: true,
   });
   const [isGenerating, setIsGenerating] = useState(false);
@@ -36,22 +37,17 @@ export default function App() {
     const availableWidth = A4_WIDTH - (settings.margin * 2);
     const availableHeight = A4_HEIGHT - (settings.margin * 2);
 
-    const rawCols = Math.floor((availableWidth + settings.spacing) / (settings.width + settings.spacing));
-    const rawRows = Math.floor((availableHeight + settings.spacing) / (settings.height + settings.spacing));
+    const cols = Math.floor((availableWidth + settings.spacingX) / (settings.width + settings.spacingX));
+    const rows = Math.floor((availableHeight + settings.spacingY) / (settings.height + settings.spacingY));
 
-    // Maximum 10 cards total, ideally in a balanced way if possible
-    // But we prioritize the dimensions set by the user
-    const cols = rawCols;
-    const rows = rawRows;
-
-    const totalWidth = cols * settings.width + (cols - 1) * settings.spacing;
-    const totalHeight = rows * settings.height + (rows - 1) * settings.spacing;
+    const totalWidth = cols * settings.width + (cols - 1) * settings.spacingX;
+    const totalHeight = rows * settings.height + (rows - 1) * settings.spacingY;
 
     const offsetX = (A4_WIDTH - totalWidth) / 2;
     const offsetY = (A4_HEIGHT - totalHeight) / 2;
 
     return { cols, rows, totalWidth, totalHeight, offsetX, offsetY };
-  }, [settings.width, settings.height, settings.margin, settings.spacing]);
+  }, [settings.width, settings.height, settings.margin, settings.spacingX, settings.spacingY]);
 
   const theoreticalMax = grid.cols * grid.rows;
 
@@ -90,8 +86,8 @@ export default function App() {
         for (let c = 0; c < cols; c++) {
           if (cardCount >= theoreticalMax) break;
           
-          const x = offsetX + c * (settings.width + settings.spacing);
-          const y = offsetY + r * (settings.height + settings.spacing);
+          const x = offsetX + c * (settings.width + settings.spacingX);
+          const y = offsetY + r * (settings.height + settings.spacingY);
 
           // Add card image
           pdf.addImage(image, 'JPEG', x, y, settings.width, settings.height);
@@ -179,12 +175,25 @@ export default function App() {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Espacement (cm)</label>
+              <label className="text-sm font-medium text-gray-600">Esp. colonnes (cm)</label>
               <input 
                 type="number"
                 step="0.1"
-                value={+(settings.spacing / 10).toFixed(2)}
-                onChange={(e) => setSettings({...settings, spacing: Math.round(Number(e.target.value) * 10)})}
+                value={+(settings.spacingX / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, spacingX: Math.round(Number(e.target.value) * 10)})}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-gray-600">Esp. rangées (cm)</label>
+              <input 
+                type="number"
+                step="0.1"
+                value={+(settings.spacingY / 10).toFixed(2)}
+                onChange={(e) => setSettings({...settings, spacingY: Math.round(Number(e.target.value) * 10)})}
                 className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
@@ -301,8 +310,8 @@ export default function App() {
               display: 'grid',
               gridTemplateColumns: `repeat(${grid.cols}, ${settings.width * 2.5}px)`,
               gridTemplateRows: `repeat(${grid.rows}, ${settings.height * 2.5}px)`,
-              columnGap: `${settings.spacing * 2.5}px`,
-              rowGap: `${settings.spacing * 2.5}px`,
+              columnGap: `${settings.spacingX * 2.5}px`,
+              rowGap: `${settings.spacingY * 2.5}px`,
             }}
           >
             {Array.from({ length: grid.cols * grid.rows }).map((_, i) => (

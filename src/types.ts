@@ -2,7 +2,8 @@ export interface CardSettings {
   width: number;
   height: number;
   margin: number;
-  spacing: number;
+  spacingX: number;
+  spacingY: number;
   showCropMarks: boolean;
 }
 
