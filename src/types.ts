@@ -4,7 +4,6 @@ export interface CardSettings {
   margin: number;
   spacing: number;
   showCropMarks: boolean;
-  maxCards: number;
 }
 
 export interface GridInfo {
