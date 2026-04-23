@@ -23,8 +23,8 @@ export default function App() {
   // 2 cols × 5 rows = 10 cards on A4
   // 2×87 + 1×3 = 177mm wide (centred) | 5×57 + 4×3 = 297mm tall (no vertical margin)
   const [settings, setSettings] = useState<CardSettings>({
-    width: 87,   // 8.7 cm
-    height: 57,  // 5.7 cm
+    width: 86,   // 8.6 cm
+    height: 56,  // 5.6 cm
     margin: 0,   // 0 cm — no margin needed to fit 5 rows
     spacing: 3,  // 0.3 cm
     showCropMarks: true,
