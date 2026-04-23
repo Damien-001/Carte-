@@ -19,11 +19,13 @@ const A4_HEIGHT = 297;
 export default function App() {
   const [image, setImage] = useState<string | null>(null);
   // Internal values are in mm; UI displays cm (÷10)
+  // 2 cols × 5 rows = 10 cards on A4 (210×297mm)
+  // 2×85 + 1×10 + 2×5 = 190mm wide ✓  |  5×55 + 4×3 + 2×5 = 297mm tall ✓
   const [settings, setSettings] = useState<CardSettings>({
     width: 85,   // 8.5 cm
     height: 55,  // 5.5 cm
-    margin: 10,  // 1 cm
-    spacing: 5,  // 0.5 cm
+    margin: 5,   // 0.5 cm
+    spacing: 3,  // 0.3 cm
     showCropMarks: true,
     maxCards: 10,
   });
@@ -51,7 +53,7 @@ export default function App() {
     return { cols, rows, totalWidth, totalHeight, offsetX, offsetY };
   }, [settings.width, settings.height, settings.margin, settings.spacing]);
 
-  const theoreticalMax = Math.min(10, grid.cols * grid.rows);
+  const theoreticalMax = grid.cols * grid.rows;
 
   // Sync maxCards if it exceeds theoreticalMax or is initialized too high
   useMemo(() => {
