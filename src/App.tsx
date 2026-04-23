@@ -19,12 +19,13 @@ const A4_HEIGHT = 297;
 export default function App() {
   const [image, setImage] = useState<string | null>(null);
   // Internal values are in mm; UI displays cm (÷10)
-  // +1mm bleed on each side: 85+2=87mm wide, 55+2=57mm tall
-  // 2 cols × 5 rows = 10 cards on A4 (210×297mm)
+  // +1mm bleed on each side: 87mm wide, 57mm tall
+  // 2 cols × 5 rows = 10 cards on A4
+  // 2×87 + 1×3 = 177mm wide (centred) | 5×57 + 4×3 = 297mm tall (no vertical margin)
   const [settings, setSettings] = useState<CardSettings>({
-    width: 87,   // 8.7 cm (8.5 + 0.1 bleed each side)
-    height: 57,  // 5.7 cm (5.5 + 0.1 bleed each side)
-    margin: 5,   // 0.5 cm
+    width: 87,   // 8.7 cm
+    height: 57,  // 5.7 cm
+    margin: 0,   // 0 cm — no margin needed to fit 5 rows
     spacing: 3,  // 0.3 cm
     showCropMarks: true,
   });
