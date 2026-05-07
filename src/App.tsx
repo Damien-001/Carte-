@@ -125,76 +125,76 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col md:flex-row font-sans text-gray-900">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col lg:flex-row font-sans text-gray-900">
       {/* Sidebar / Controls */}
-      <aside className="w-full md:w-80 bg-white border-r border-gray-200 p-6 flex flex-col gap-8 shadow-sm h-screen overflow-y-auto z-10">
+      <aside className="w-full lg:w-80 bg-white lg:border-r border-b lg:border-b-0 border-gray-200 p-4 sm:p-6 flex flex-col gap-4 sm:gap-6 lg:gap-8 shadow-sm lg:h-screen overflow-y-auto z-10">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-indigo-200 shadow-lg">
-            <Maximize2 size={22} />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600 rounded-lg flex items-center justify-center text-white shadow-indigo-200 shadow-lg">
+            <Maximize2 size={22} className="sm:w-6 sm:h-6" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-800">Planche Express</h1>
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-gray-800">Planche Express</h1>
         </div>
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-3 sm:gap-4">
           <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
             <Settings size={14} /> Configuration
           </label>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Largeur (cm)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-600">Largeur (cm)</label>
               <input 
                 type="number"
                 step="0.1"
                 value={+(settings.width / 10).toFixed(2)}
                 onChange={(e) => setSettings({...settings, width: Math.round(Number(e.target.value) * 10)})}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+                className="w-full px-2 sm:px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Hauteur (cm)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-600">Hauteur (cm)</label>
               <input 
                 type="number"
                 step="0.1"
                 value={+(settings.height / 10).toFixed(2)}
                 onChange={(e) => setSettings({...settings, height: Math.round(Number(e.target.value) * 10)})}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+                className="w-full px-2 sm:px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Marge (cm)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-600">Marge (cm)</label>
               <input 
                 type="number"
                 step="0.1"
                 value={+(settings.margin / 10).toFixed(2)}
                 onChange={(e) => setSettings({...settings, margin: Math.round(Number(e.target.value) * 10)})}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+                className="w-full px-2 sm:px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Esp. colonnes (cm)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-600">Esp. colonnes (cm)</label>
               <input 
                 type="number"
                 step="0.1"
                 value={+(settings.spacingX / 10).toFixed(2)}
                 onChange={(e) => setSettings({...settings, spacingX: Math.round(Number(e.target.value) * 10)})}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+                className="w-full px-2 sm:px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-600">Esp. rangées (cm)</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-600">Esp. rangées (cm)</label>
               <input 
                 type="number"
                 step="0.1"
                 value={+(settings.spacingY / 10).toFixed(2)}
                 onChange={(e) => setSettings({...settings, spacingY: Math.round(Number(e.target.value) * 10)})}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
+                className="w-full px-2 sm:px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-indigo-500 outline-none transition-all font-mono"
               />
             </div>
           </div>
@@ -219,24 +219,24 @@ export default function App() {
           </div>
         </section>
 
-        <section className="flex flex-col gap-4">
+        <section className="flex flex-col gap-3 sm:gap-4">
           <label className="text-xs font-bold uppercase tracking-widest text-gray-500 flex items-center gap-2">
             <Upload size={14} /> Fichier Source
           </label>
           
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className={`w-full py-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${image ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-indigo-400 hover:bg-indigo-50'}`}
+            className={`w-full py-6 sm:py-8 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 sm:gap-3 transition-all cursor-pointer ${image ? 'border-green-200 bg-green-50' : 'border-gray-200 hover:border-indigo-400 hover:bg-indigo-50'}`}
           >
             {image ? (
               <>
-                <CheckCircle2 className="text-green-500" size={32} />
+                <CheckCircle2 className="text-green-500" size={28} />
                 <span className="text-sm font-semibold text-green-700">Image chargée</span>
                 <span className="text-xs text-green-600 px-4 text-center">Cliquez pour changer</span>
               </>
             ) : (
               <>
-                <Upload className="text-gray-400" size={32} />
+                <Upload className="text-gray-400" size={28} />
                 <div className="flex flex-col items-center">
                   <span className="text-sm font-semibold text-gray-700">Importer une carte</span>
                   <span className="text-xs text-gray-500">PNG, JPG</span>
@@ -253,9 +253,9 @@ export default function App() {
           </button>
         </section>
 
-        <div className="mt-auto pt-6 border-t border-gray-100">
-           <div className="bg-blue-50 p-4 rounded-lg mb-4 flex gap-3">
-              <AlertCircle className="text-blue-500 shrink-0" size={18} />
+        <div className="mt-auto pt-4 sm:pt-6 border-t border-gray-100">
+           <div className="bg-blue-50 p-3 sm:p-4 rounded-lg mb-3 sm:mb-4 flex gap-2 sm:gap-3">
+              <AlertCircle className="text-blue-500 shrink-0" size={16} />
               <p className="text-xs text-blue-700 leading-relaxed">
                 <span className="font-bold">Planche :</span> {theoreticalMax} cartes ({grid.cols} col. × {grid.rows} rangées).
               </p>
@@ -264,7 +264,7 @@ export default function App() {
           <button 
             onClick={handleDownloadPDF}
             disabled={!image || isGenerating}
-            className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-200"
+            className="w-full py-3 sm:py-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition-all shadow-lg shadow-indigo-200"
           >
             {isGenerating ? (
               <span className="flex items-center gap-2">
@@ -287,31 +287,30 @@ export default function App() {
       </aside>
 
       {/* Main Preview Area */}
-      <main className="flex-1 p-4 md:p-8 flex items-center justify-center overflow-auto h-screen bg-gray-100">
+      <main className="flex-1 p-2 sm:p-4 lg:p-8 flex items-center justify-center overflow-auto min-h-[50vh] lg:h-screen bg-gray-100">
         <div 
-          className="bg-white shadow-2xl relative overflow-hidden transition-all duration-300"
+          className="bg-white shadow-xl lg:shadow-2xl relative overflow-hidden transition-all duration-300 w-full"
           style={{
-            width: `${A4_WIDTH * 2.5}px`,
-            height: `${A4_HEIGHT * 2.5}px`,
+            maxWidth: '100%',
             aspectRatio: '210/297',
           }}
         >
           {/* A4 Sheet Mockup */}
-          <div className="absolute inset-0 border-8 border-white"></div>
+          <div className="absolute inset-0 border-2 sm:border-4 lg:border-8 border-white"></div>
           
           {/* Grid Render */}
           <div 
             className="absolute"
             style={{
-              left: `${grid.offsetX * 2.5}px`,
-              top: `${grid.offsetY * 2.5}px`,
-              width: `${grid.totalWidth * 2.5}px`,
-              height: `${grid.totalHeight * 2.5}px`,
+              left: `${(grid.offsetX / A4_WIDTH) * 100}%`,
+              top: `${(grid.offsetY / A4_HEIGHT) * 100}%`,
+              width: `${(grid.totalWidth / A4_WIDTH) * 100}%`,
+              height: `${(grid.totalHeight / A4_HEIGHT) * 100}%`,
               display: 'grid',
-              gridTemplateColumns: `repeat(${grid.cols}, ${settings.width * 2.5}px)`,
-              gridTemplateRows: `repeat(${grid.rows}, ${settings.height * 2.5}px)`,
-              columnGap: `${settings.spacingX * 2.5}px`,
-              rowGap: `${settings.spacingY * 2.5}px`,
+              gridTemplateColumns: `repeat(${grid.cols}, 1fr)`,
+              gridTemplateRows: `repeat(${grid.rows}, 1fr)`,
+              columnGap: `${(settings.spacingX / grid.totalWidth) * 100}%`,
+              rowGap: `${(settings.spacingY / grid.totalHeight) * 100}%`,
             }}
           >
             {Array.from({ length: grid.cols * grid.rows }).map((_, i) => (
@@ -327,21 +326,21 @@ export default function App() {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <ImageIcon className="text-gray-200" size={24} />
+                  <ImageIcon className="text-gray-200 w-4 h-4 sm:w-6 sm:h-6" />
                 )}
 
-                {/* Crop Marks Preview (Simplified) */}
+                {/* Crop Marks Preview (Simplified) - Hidden on very small screens */}
                 {settings.showCropMarks && (
                   <>
-                    <div className="absolute top-[-5px] left-[-0.5px] w-[1px] h-[4px] bg-indigo-300" />
-                    <div className="absolute top-[-5px] right-[-0.5px] w-[1px] h-[4px] bg-indigo-300" />
-                    <div className="absolute bottom-[-5px] left-[-0.5px] w-[1px] h-[4px] bg-indigo-300" />
-                    <div className="absolute bottom-[-5px] right-[-0.5px] w-[1px] h-[4px] bg-indigo-300" />
+                    <div className="absolute top-[-3px] sm:top-[-5px] left-[-0.5px] w-[0.5px] sm:w-[1px] h-[2px] sm:h-[4px] bg-indigo-300" />
+                    <div className="absolute top-[-3px] sm:top-[-5px] right-[-0.5px] w-[0.5px] sm:w-[1px] h-[2px] sm:h-[4px] bg-indigo-300" />
+                    <div className="absolute bottom-[-3px] sm:bottom-[-5px] left-[-0.5px] w-[0.5px] sm:w-[1px] h-[2px] sm:h-[4px] bg-indigo-300" />
+                    <div className="absolute bottom-[-3px] sm:bottom-[-5px] right-[-0.5px] w-[0.5px] sm:w-[1px] h-[2px] sm:h-[4px] bg-indigo-300" />
                     
-                    <div className="absolute left-[-5px] top-[-0.5px] w-[4px] h-[1px] bg-indigo-300" />
-                    <div className="absolute left-[-5px] bottom-[-0.5px] w-[4px] h-[1px] bg-indigo-300" />
-                    <div className="absolute right-[-5px] top-[-0.5px] w-[4px] h-[1px] bg-indigo-300" />
-                    <div className="absolute right-[-5px] bottom-[-0.5px] w-[4px] h-[1px] bg-indigo-300" />
+                    <div className="absolute left-[-3px] sm:left-[-5px] top-[-0.5px] w-[2px] sm:w-[4px] h-[0.5px] sm:h-[1px] bg-indigo-300" />
+                    <div className="absolute left-[-3px] sm:left-[-5px] bottom-[-0.5px] w-[2px] sm:w-[4px] h-[0.5px] sm:h-[1px] bg-indigo-300" />
+                    <div className="absolute right-[-3px] sm:right-[-5px] top-[-0.5px] w-[2px] sm:w-[4px] h-[0.5px] sm:h-[1px] bg-indigo-300" />
+                    <div className="absolute right-[-3px] sm:right-[-5px] bottom-[-0.5px] w-[2px] sm:w-[4px] h-[0.5px] sm:h-[1px] bg-indigo-300" />
                   </>
                 )}
               </div>
@@ -352,21 +351,22 @@ export default function App() {
           <div 
             className="absolute border border-indigo-100 border-dashed pointer-events-none"
             style={{
-              left: `${settings.margin * 2.5}px`,
-              top: `${settings.margin * 2.5}px`,
-              right: `${settings.margin * 2.5}px`,
-              bottom: `${settings.margin * 2.5}px`
+              left: `${(settings.margin / A4_WIDTH) * 100}%`,
+              top: `${(settings.margin / A4_HEIGHT) * 100}%`,
+              right: `${(settings.margin / A4_WIDTH) * 100}%`,
+              bottom: `${(settings.margin / A4_HEIGHT) * 100}%`
             }}
           />
         </div>
 
         {/* Floating helper for small screens (scroll to top) */}
-        <div className="fixed bottom-4 right-4 md:hidden">
+        <div className="fixed bottom-4 right-4 lg:hidden z-50">
           <button 
-            className="w-14 h-14 bg-indigo-600 text-white rounded-full shadow-xl flex items-center justify-center"
+            className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all active:scale-95"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Retour en haut"
           >
-             <Settings size={28} />
+             <Settings size={24} className="sm:w-7 sm:h-7" />
           </button>
         </div>
       </main>
