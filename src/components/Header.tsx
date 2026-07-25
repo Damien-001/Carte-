@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Printer,
   DownloadSimple,
@@ -7,6 +7,10 @@ import {
   ArrowCounterClockwise,
   Sun,
   Moon,
+  DeviceMobile,
+  X,
+  Laptop,
+  AppleLogo,
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
 import { DemoCardSample, ThemeMode } from '../types';
@@ -34,8 +38,42 @@ export function Header({
   totalCards,
 }: HeaderProps) {
   const [showDemoMenu, setShowDemoMenu] = useState(false);
+  const [showInstallModal, setShowInstallModal] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isStandalone, setIsStandalone] = useState(false);
 
   const isDark = theme === 'dark';
+
+  useEffect(() => {
+    // Check if app is already running in PWA standalone mode
+    const isStandaloneApp =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    setIsStandalone(isStandaloneApp);
+
+    // Listen for Chrome/Android/Desktop beforeinstallprompt event
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      setShowInstallModal(true);
+    }
+  };
 
   return (
     <header
@@ -87,8 +125,20 @@ export function Header({
         </div>
       </div>
 
-      {/* Middle Controls & Demo Loader */}
+      {/* Middle Controls & PWA Install Button */}
       <div className="hidden md:flex items-center gap-3">
+        {/* PWA Install Button (If not already installed) */}
+        {!isStandalone && (
+          <button
+            type="button"
+            onClick={handleInstallClick}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 border border-indigo-400/40 shadow-md shadow-indigo-600/20 flex items-center gap-2 transition-all group"
+          >
+            <DeviceMobile size={16} weight="fill" className="group-hover:scale-110 transition-transform" />
+            <span>Installer l'App</span>
+          </button>
+        )}
+
         {/* Theme Toggle Button */}
         <button
           type="button"
@@ -207,8 +257,20 @@ export function Header({
         </div>
       </div>
 
-      {/* Right Action Button: Button-in-Button CTA */}
+      {/* Right Action Buttons */}
       <div className="flex items-center gap-2">
+        {/* Mobile Install Button */}
+        {!isStandalone && (
+          <button
+            type="button"
+            onClick={handleInstallClick}
+            className="md:hidden px-3 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 flex items-center gap-1.5"
+          >
+            <DeviceMobile size={16} />
+            <span>App</span>
+          </button>
+        )}
+
         <motion.button
           type="button"
           onClick={onDownloadPdf}
@@ -228,7 +290,6 @@ export function Header({
               : `Télécharger PDF (${totalCards})`}
           </span>
 
-          {/* Nested inner circle icon */}
           <div
             className={`w-7 h-7 rounded-full flex items-center justify-center transition-transform duration-300 ${
               hasImage && !isGenerating
@@ -246,6 +307,78 @@ export function Header({
           </div>
         </motion.button>
       </div>
+
+      {/* PWA Installation Instructions Modal */}
+      <AnimatePresence>
+        {showInstallModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className={`relative w-full max-w-lg p-6 rounded-3xl border shadow-2xl ${
+                isDark
+                  ? 'bg-zinc-900 border-zinc-800 text-zinc-100'
+                  : 'bg-white border-slate-200 text-slate-900'
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setShowInstallModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/50 transition-colors"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-2xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+                  <DeviceMobile size={28} weight="duotone" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold">Installer Planche Express Studio</h3>
+                  <p className="text-xs text-zinc-400">Application native PC, Mac, Android & iOS</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 text-xs">
+                <div className="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-800/40 flex items-start gap-3">
+                  <Laptop size={20} className="text-indigo-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-indigo-300 block mb-0.5">Sur PC & Mac (Chrome, Edge, Brave) :</strong>
+                    <span>Cliquez sur l'icône <strong>« Installer » (+)</strong> située dans la barre d'adresse du navigateur.</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-slate-900/50 border border-slate-700/50 flex items-start gap-3">
+                  <DeviceMobile size={20} className="text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-emerald-300 block mb-0.5">Sur Android (Chrome) :</strong>
+                    <span>Appuyez sur le menu <strong>⋮ (3 points)</strong> en haut à droite, puis sélectionnez <strong>« Installer l'application »</strong>.</span>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-slate-900/50 border border-slate-700/50 flex items-start gap-3">
+                  <AppleLogo size={20} className="text-amber-400 shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-amber-300 block mb-0.5">Sur iPhone & iPad (Safari) :</strong>
+                    <span>Appuyez sur le bouton <strong>Partager ⎋</strong> en bas de Safari, puis sélectionnez <strong>« Sur l'écran d'accueil »</strong>.</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowInstallModal(false)}
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition-colors"
+                >
+                  J'ai compris
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

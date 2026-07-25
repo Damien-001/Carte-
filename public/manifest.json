@@ -1,0 +1,24 @@
+{
+  "name": "Planche Express Studio A4",
+  "short_name": "PlancheExpress",
+  "description": "Générateur d'imposition de cartes de visite & traits de coupe sur A4",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#060609",
+  "theme_color": "#6366f1",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
