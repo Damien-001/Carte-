@@ -11,9 +11,10 @@ import {
   Copy,
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CardSettings, GridInfo } from '../types';
+import { CardSettings, GridInfo, ThemeMode } from '../types';
 
 interface PreviewStageProps {
+  theme: ThemeMode;
   imageRecto: string | null;
   imageVerso: string | null;
   activeFace: 'recto' | 'verso';
@@ -24,6 +25,7 @@ interface PreviewStageProps {
 }
 
 export function PreviewStage({
+  theme,
   imageRecto,
   imageVerso,
   activeFace,
@@ -32,6 +34,7 @@ export function PreviewStage({
   grid,
   onToggleSlot,
 }: PreviewStageProps) {
+  const isDark = theme === 'dark';
   const [zoom, setZoom] = useState(1);
 
   const totalCards = grid.cols * grid.rows;
@@ -47,29 +50,46 @@ export function PreviewStage({
   const handleResetZoom = () => setZoom(1);
 
   return (
-    <main className="flex-1 flex flex-col bg-[#1a1a1e] relative overflow-hidden h-full select-none min-h-0">
+    <main
+      className={`flex-1 flex flex-col relative overflow-hidden h-full select-none min-h-0 transition-colors duration-200 ${
+        isDark ? 'bg-[#1a1a1e]' : 'bg-[#e2e8f0]'
+      }`}
+    >
       {/* Studio Backdrop grid texture */}
       <div
         className="absolute inset-0 opacity-10 pointer-events-none"
         style={{
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
-          `,
+          backgroundImage: isDark
+            ? `
+              linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+            `
+            : `
+              linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)
+            `,
           backgroundSize: '20px 20px',
         }}
       />
 
       {/* Stage Top Bar: Page Selection (Recto / Verso) */}
       <div className="absolute top-4 left-4 z-20 flex items-center gap-3">
-        <div className="p-1 rounded-2xl bg-zinc-900/95 border border-zinc-800 shadow-2xl backdrop-blur-xl flex items-center gap-1">
+        <div
+          className={`p-1 rounded-2xl border shadow-2xl backdrop-blur-xl flex items-center gap-1 ${
+            isDark
+              ? 'bg-zinc-900/95 border-zinc-800'
+              : 'bg-white/95 border-slate-200 shadow-md'
+          }`}
+        >
           <button
             type="button"
             onClick={() => onActiveFaceChange('recto')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono flex items-center gap-2 transition-all ${
               activeFace === 'recto'
                 ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                : isDark
+                ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -83,7 +103,9 @@ export function PreviewStage({
             className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono flex items-center gap-2 transition-all ${
               activeFace === 'verso'
                 ? 'bg-indigo-600 text-white shadow-md'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                : isDark
+                ? 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Copy size={13} />
@@ -94,12 +116,20 @@ export function PreviewStage({
       </div>
 
       {/* Floating Toolbar: Zoom & View controls */}
-      <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 p-1 rounded-2xl bg-zinc-900/90 border border-zinc-800/80 shadow-2xl backdrop-blur-xl">
+      <div
+        className={`absolute top-4 right-4 z-20 flex items-center gap-1.5 p-1 rounded-2xl border shadow-2xl backdrop-blur-xl ${
+          isDark
+            ? 'bg-zinc-900/90 border-zinc-800/80 text-zinc-300'
+            : 'bg-white/90 border-slate-200 text-slate-700 shadow-md'
+        }`}
+      >
         <button
           type="button"
           onClick={handleZoomOut}
           title="Zoom arrière"
-          className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors"
+          className={`p-2 rounded-xl transition-colors ${
+            isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
           <MagnifyingGlassMinus size={16} />
         </button>
@@ -107,7 +137,9 @@ export function PreviewStage({
         <button
           type="button"
           onClick={handleResetZoom}
-          className="px-2.5 py-1 text-xs font-mono font-semibold text-zinc-300 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors"
+          className={`px-2.5 py-1 text-xs font-mono font-semibold rounded-xl transition-colors ${
+            isDark ? 'text-zinc-300 hover:text-white hover:bg-zinc-800' : 'text-slate-700 hover:text-slate-950 hover:bg-slate-100'
+          }`}
         >
           {Math.round(zoom * 100)}%
         </button>
@@ -116,18 +148,22 @@ export function PreviewStage({
           type="button"
           onClick={handleZoomIn}
           title="Zoom avant"
-          className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors"
+          className={`p-2 rounded-xl transition-colors ${
+            isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
           <MagnifyingGlassPlus size={16} />
         </button>
 
-        <div className="w-px h-4 bg-zinc-800 my-auto mx-1" />
+        <div className={`w-px h-4 my-auto mx-1 ${isDark ? 'bg-zinc-800' : 'bg-slate-200'}`} />
 
         <button
           type="button"
           onClick={handleResetZoom}
           title="Ajuster l'affichage"
-          className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-xl transition-colors"
+          className={`p-2 rounded-xl transition-colors ${
+            isDark ? 'text-zinc-400 hover:text-white hover:bg-zinc-800' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
+          }`}
         >
           <ArrowsOut size={16} />
         </button>
@@ -141,7 +177,9 @@ export function PreviewStage({
         >
           {/* Pristine Clean White A4 Paper Sheet */}
           <div
-            className="relative bg-white shadow-[0_20px_60px_rgba(0,0,0,0.7)] transition-all duration-300 rounded-[1px] shrink-0"
+            className={`relative bg-white transition-all duration-300 rounded-[1px] shrink-0 ${
+              isDark ? 'shadow-[0_20px_60px_rgba(0,0,0,0.7)]' : 'shadow-[0_15px_45px_rgba(0,0,0,0.18)] border border-slate-200'
+            }`}
             style={{
               width: isPortrait ? 'min(68vw, 540px)' : 'min(82vw, 760px)',
               aspectRatio: `${grid.pageWidth} / ${grid.pageHeight}`,
@@ -244,28 +282,56 @@ export function PreviewStage({
       </div>
 
       {/* Floating Fixed Bottom Bar: Live Statistics */}
-      <footer className="w-full px-6 py-3 border-t border-zinc-800/80 bg-[#07070a]/95 backdrop-blur-xl flex flex-wrap items-center justify-between gap-4 shrink-0 sticky bottom-0 z-30">
+      <footer
+        className={`w-full px-6 py-3 border-t backdrop-blur-xl flex flex-wrap items-center justify-between gap-4 shrink-0 sticky bottom-0 z-30 transition-colors duration-200 ${
+          isDark
+            ? 'border-zinc-800/80 bg-[#07070a]/95 text-zinc-300'
+            : 'border-slate-200 bg-white/95 text-slate-700 shadow-md'
+        }`}
+      >
         <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-300">
-            <Columns size={14} className="text-indigo-400" />
+          <div
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
+              isDark
+                ? 'bg-zinc-900/80 border-zinc-800 text-zinc-300'
+                : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}
+          >
+            <Columns size={14} className="text-indigo-500" />
             <span>{grid.cols} cols</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/80 border border-zinc-800 text-zinc-300">
-            <Rows size={14} className="text-indigo-400" />
+          <div
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border ${
+              isDark
+                ? 'bg-zinc-900/80 border-zinc-800 text-zinc-300'
+                : 'bg-slate-100 border-slate-200 text-slate-700'
+            }`}
+          >
+            <Rows size={14} className="text-indigo-500" />
             <span>{grid.rows} rangées</span>
           </div>
 
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-950/40 border border-indigo-800/50 text-indigo-300 font-bold">
-            <BoundingBox size={14} className="text-indigo-400" />
+          <div
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border font-bold ${
+              isDark
+                ? 'bg-indigo-950/40 border-indigo-800/50 text-indigo-300'
+                : 'bg-indigo-50 border-indigo-200 text-indigo-700'
+            }`}
+          >
+            <BoundingBox size={14} className="text-indigo-500" />
             <span>{grid.activeCount} / {totalCards} cartes ({activeFace.toUpperCase()})</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-mono text-zinc-500">
+        <div
+          className={`flex items-center gap-4 text-xs font-mono ${
+            isDark ? 'text-zinc-500' : 'text-slate-400'
+          }`}
+        >
           <span>
             Surface occupée :{' '}
-            <strong className="text-zinc-300 font-semibold">
+            <strong className={isDark ? 'text-zinc-300 font-semibold' : 'text-slate-800 font-semibold'}>
               {grid.coveragePercent}%
             </strong>
           </span>

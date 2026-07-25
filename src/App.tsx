@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { CardSettings, GridInfo, DemoCardSample } from './types';
+import { CardSettings, GridInfo, DemoCardSample, ThemeMode } from './types';
 import { generateA4Pdf } from './utils/pdfGenerator';
 import { Header } from './components/Header';
 import { SidebarControls } from './components/SidebarControls';
@@ -11,6 +11,7 @@ const A4_PORTRAIT_HEIGHT = 297;
 const STORAGE_KEY_SETTINGS = 'planche_express_settings_v3';
 const STORAGE_KEY_RECTO = 'planche_express_recto_v3';
 const STORAGE_KEY_VERSO = 'planche_express_verso_v3';
+const STORAGE_KEY_THEME = 'planche_express_theme_v3';
 
 const DEFAULT_SETTINGS: CardSettings = {
   presetId: 'eu-standard',
@@ -56,12 +57,32 @@ function getInitialImage(key: string): string | null {
   }
 }
 
+function getInitialTheme(): ThemeMode {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY_THEME);
+    if (saved === 'light' || saved === 'dark') return saved;
+  } catch (err) {
+    // fallback
+  }
+  return 'dark';
+}
+
 export default function App() {
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
   const [settings, setSettings] = useState<CardSettings>(getInitialSettings);
   const [imageRecto, setImageRecto] = useState<string | null>(() => getInitialImage(STORAGE_KEY_RECTO));
   const [imageVerso, setImageVerso] = useState<string | null>(() => getInitialImage(STORAGE_KEY_VERSO));
   const [activeFace, setActiveFace] = useState<'recto' | 'verso'>('recto');
   const [isGenerating, setIsGenerating] = useState(false);
+
+  // Save Theme preference to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY_THEME, theme);
+    } catch (err) {
+      console.error('Erreur sauvegarde theme:', err);
+    }
+  }, [theme]);
 
   // Auto-save Settings to localStorage
   useEffect(() => {
@@ -168,6 +189,10 @@ export default function App() {
     settings.disabledSlots,
   ]);
 
+  const handleToggleTheme = () => {
+    setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+  };
+
   const handleSelectDemoCard = (demo: DemoCardSample) => {
     setImageRecto(demo.dataUrlRecto);
     setImageVerso(demo.dataUrlVerso);
@@ -222,9 +247,15 @@ export default function App() {
   const hasAnyImage = Boolean(imageRecto || imageVerso);
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-[#060609] text-zinc-100 font-sans selection:bg-indigo-500/30 selection:text-indigo-200 overflow-hidden">
+    <div
+      className={`h-screen w-screen flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200 overflow-hidden transition-colors duration-200 ${
+        theme === 'dark' ? 'bg-[#060609] text-zinc-100' : 'bg-slate-100 text-slate-900'
+      }`}
+    >
       {/* Top Floating Glass Header */}
       <Header
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
         onSelectDemoCard={handleSelectDemoCard}
         onDownloadPdf={handleDownloadPdf}
         onResetSettings={handleResetSettings}
@@ -237,6 +268,7 @@ export default function App() {
       <div className="flex-1 flex flex-col lg:flex-row overflow-hidden min-h-0">
         {/* Left Sidebar Controls */}
         <SidebarControls
+          theme={theme}
           settings={settings}
           onSettingsChange={setSettings}
           imageRecto={imageRecto}
@@ -251,6 +283,7 @@ export default function App() {
 
         {/* Right Interactive A4 Preview Stage */}
         <PreviewStage
+          theme={theme}
           imageRecto={imageRecto}
           imageVerso={imageVerso}
           activeFace={activeFace}

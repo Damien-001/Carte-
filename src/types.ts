@@ -1,5 +1,7 @@
 export type Orientation = 'portrait' | 'landscape';
 
+export type ThemeMode = 'dark' | 'light';
+
 export type FitMode = 'cover' | 'contain' | 'fill';
 
 export type AlignX = 'center' | 'left' | 'right' | 'custom';

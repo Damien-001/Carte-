@@ -22,12 +22,13 @@ import {
   FrameCorners,
 } from '@phosphor-icons/react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CardSettings, PresetCard, DemoCardSample } from '../types';
+import { CardSettings, PresetCard, DemoCardSample, ThemeMode } from '../types';
 import { CARD_PRESETS, DEMO_CARDS } from '../constants/presets';
 import { NumInput } from './NumInput';
 import { SliderInput } from './SliderInput';
 
 interface SidebarControlsProps {
+  theme: ThemeMode;
   settings: CardSettings;
   onSettingsChange: (newSettings: CardSettings) => void;
   imageRecto: string | null;
@@ -41,6 +42,7 @@ interface SidebarControlsProps {
 }
 
 export function SidebarControls({
+  theme,
   settings,
   onSettingsChange,
   imageRecto,
@@ -52,6 +54,7 @@ export function SidebarControls({
   onSelectDemoCard,
   totalSlots,
 }: SidebarControlsProps) {
+  const isDark = theme === 'dark';
   const fileInputRectoRef = useRef<HTMLInputElement>(null);
   const fileInputVersoRef = useRef<HTMLInputElement>(null);
 
@@ -115,14 +118,24 @@ export function SidebarControls({
   };
 
   return (
-    <aside className="w-full lg:w-80 xl:w-96 bg-[#09090e] border-b lg:border-b-0 lg:border-r border-zinc-800/80 flex flex-col lg:h-[calc(100vh-61px)] overflow-y-auto shrink-0">
+    <aside
+      className={`w-full lg:w-80 xl:w-96 border-b lg:border-b-0 lg:border-r flex flex-col lg:h-[calc(100vh-61px)] overflow-y-auto shrink-0 transition-colors duration-200 ${
+        isDark
+          ? 'bg-[#09090e] border-zinc-800/80 text-zinc-100'
+          : 'bg-white border-slate-200 text-slate-900 shadow-xs'
+      }`}
+    >
       <div className="p-5 flex flex-col gap-6">
 
         {/* ── Section 1: Presets ── */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <GridFour size={14} className="text-indigo-400" />
+            <span
+              className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                isDark ? 'text-zinc-400' : 'text-slate-500'
+              }`}
+            >
+              <GridFour size={14} className="text-indigo-500" />
               Formats Préréglés
             </span>
           </div>
@@ -137,8 +150,12 @@ export function SidebarControls({
                   onClick={() => handleSelectPreset(preset)}
                   className={`p-2.5 rounded-xl border text-left transition-all duration-200 flex flex-col justify-between gap-1.5 ${
                     isSelected
-                      ? 'bg-indigo-600/15 border-indigo-500/50 text-zinc-100 ring-1 ring-indigo-500/30'
-                      : 'bg-zinc-950/60 border-zinc-800/80 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700 hover:bg-zinc-900/40'
+                      ? isDark
+                        ? 'bg-indigo-600/15 border-indigo-500/50 text-zinc-100 ring-1 ring-indigo-500/30'
+                        : 'bg-indigo-50 border-indigo-400 text-indigo-950 ring-1 ring-indigo-300'
+                      : isDark
+                      ? 'bg-zinc-950/60 border-zinc-800/80 text-zinc-400 hover:text-zinc-200 hover:border-zinc-700'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:border-slate-300'
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
@@ -146,10 +163,14 @@ export function SidebarControls({
                       {preset.name}
                     </span>
                     {isSelected && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 shrink-0" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
                     )}
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-500">
+                  <span
+                    className={`text-[10px] font-mono ${
+                      isDark ? 'text-zinc-500' : 'text-slate-400'
+                    }`}
+                  >
                     {preset.width} × {preset.height} mm
                   </span>
                 </button>
@@ -158,26 +179,38 @@ export function SidebarControls({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800/60 w-full" />
+        <div className={`h-px w-full ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} />
 
         {/* ── Section 2: Dual Visuels (RECTO / VERSO) ── */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <Selection size={14} className="text-indigo-400" />
+            <span
+              className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                isDark ? 'text-zinc-400' : 'text-slate-500'
+              }`}
+            >
+              <Selection size={14} className="text-indigo-500" />
               Visuels de la Carte (Recto / Verso)
             </span>
           </div>
 
           {/* Tab Switcher: Recto / Verso */}
-          <div className="grid grid-cols-2 gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+          <div
+            className={`grid grid-cols-2 gap-1.5 p-1 rounded-xl border ${
+              isDark
+                ? 'bg-zinc-950 border-zinc-800'
+                : 'bg-slate-100 border-slate-200'
+            }`}
+          >
             <button
               type="button"
               onClick={() => onActiveFaceChange('recto')}
               className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 activeFace === 'recto'
                   ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  : isDark
+                  ? 'text-zinc-400 hover:text-zinc-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>🎴 RECTO (Face 1)</span>
@@ -190,7 +223,9 @@ export function SidebarControls({
               className={`py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 activeFace === 'verso'
                   ? 'bg-indigo-600 text-white shadow-md'
-                  : 'text-zinc-400 hover:text-zinc-200'
+                  : isDark
+                  ? 'text-zinc-400 hover:text-zinc-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>🃏 VERSO (Face 2)</span>
@@ -209,7 +244,9 @@ export function SidebarControls({
               className={`relative w-full rounded-2xl border border-dashed p-4 flex flex-col items-center justify-center gap-3 transition-all duration-200 overflow-hidden group ${
                 currentImage
                   ? 'border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-500/60'
-                  : 'border-zinc-700/80 hover:border-indigo-500/50 bg-zinc-950/40 hover:bg-zinc-900/30'
+                  : isDark
+                  ? 'border-zinc-700/80 hover:border-indigo-500/50 bg-zinc-950/40 hover:bg-zinc-900/30'
+                  : 'border-slate-300 hover:border-indigo-500 bg-slate-50 hover:bg-slate-100/70'
               }`}
             >
               <AnimatePresence mode="wait">
@@ -221,7 +258,13 @@ export function SidebarControls({
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="flex flex-col items-center gap-2.5 w-full"
                   >
-                    <div className="relative w-full h-24 rounded-xl overflow-hidden border border-zinc-700 bg-zinc-900 flex items-center justify-center">
+                    <div
+                      className={`relative w-full h-24 rounded-xl overflow-hidden border flex items-center justify-center ${
+                        isDark
+                          ? 'border-zinc-700 bg-zinc-900'
+                          : 'border-slate-300 bg-white'
+                      }`}
+                    >
                       <img
                         src={currentImage}
                         alt="Aperçu carte"
@@ -233,7 +276,7 @@ export function SidebarControls({
                       </div>
                     </div>
                     <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-emerald-500">
                         <CheckCircle size={15} weight="fill" />
                         <span>Visuel {activeFace.toUpperCase()} chargé</span>
                       </div>
@@ -244,7 +287,7 @@ export function SidebarControls({
                           if (activeFace === 'recto') onImageRectoChange(null);
                           else onImageVersoChange(null);
                         }}
-                        className="text-[10px] text-rose-400 hover:text-rose-300 flex items-center gap-1 transition-colors"
+                        className="text-[10px] text-rose-500 hover:text-rose-600 flex items-center gap-1 transition-colors font-medium"
                       >
                         <Trash size={12} />
                         Effacer
@@ -259,14 +302,30 @@ export function SidebarControls({
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="flex flex-col items-center gap-2 py-3 text-center"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-indigo-400 group-hover:border-indigo-500/40 transition-colors">
+                    <div
+                      className={`w-10 h-10 rounded-xl border flex items-center justify-center transition-colors ${
+                        isDark
+                          ? 'bg-zinc-900 border-zinc-800 text-zinc-400 group-hover:text-indigo-400 group-hover:border-indigo-500/40'
+                          : 'bg-white border-slate-200 text-slate-500 group-hover:text-indigo-600 group-hover:border-indigo-300'
+                      }`}
+                    >
                       <UploadSimple size={20} />
                     </div>
                     <div>
-                      <span className="text-xs font-semibold text-zinc-300 group-hover:text-white transition-colors block">
+                      <span
+                        className={`text-xs font-semibold transition-colors block ${
+                          isDark
+                            ? 'text-zinc-300 group-hover:text-white'
+                            : 'text-slate-700 group-hover:text-slate-900'
+                        }`}
+                      >
                         Importer l'image {activeFace.toUpperCase()}
                       </span>
-                      <span className="text-[10px] text-zinc-500 block mt-0.5">
+                      <span
+                        className={`text-[10px] block mt-0.5 ${
+                          isDark ? 'text-zinc-500' : 'text-slate-400'
+                        }`}
+                      >
                         Glissez votre fichier PNG, JPG ou SVG
                       </span>
                     </div>
@@ -290,37 +349,67 @@ export function SidebarControls({
               />
             </button>
 
-            {/* Active Face Adjustment Controls (Rotation & Fit Mode) */}
+            {/* Active Face Adjustment Controls */}
             {currentImage && (
-              <div className="flex flex-col gap-2.5 p-3 mt-2 rounded-xl bg-zinc-950/70 border border-zinc-800">
+              <div
+                className={`flex flex-col gap-2.5 p-3 mt-2 rounded-xl border ${
+                  isDark
+                    ? 'bg-zinc-950/70 border-zinc-800'
+                    : 'bg-slate-50 border-slate-200'
+                }`}
+              >
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <ArrowClockwise size={13} className="text-indigo-400" />
+                  <span
+                    className={`text-[11px] font-semibold flex items-center gap-1.5 ${
+                      isDark ? 'text-zinc-300' : 'text-slate-700'
+                    }`}
+                  >
+                    <ArrowClockwise size={13} className="text-indigo-500" />
                     Orientation ({activeFace.toUpperCase()}) :
                   </span>
                   <button
                     type="button"
                     onClick={handleRotate}
-                    className="px-2.5 py-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-mono font-semibold text-indigo-400 flex items-center gap-1 transition-colors"
+                    className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-semibold text-indigo-500 flex items-center gap-1 transition-colors ${
+                      isDark
+                        ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-700'
+                        : 'bg-white hover:bg-slate-100 border-slate-300 shadow-2xs'
+                    }`}
                   >
                     <ArrowClockwise size={12} />
                     {currentRotation}° → Pivoter
                   </button>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-800/80">
-                  <span className="text-[11px] font-semibold text-zinc-300 flex items-center gap-1.5">
-                    <FrameCorners size={13} className="text-indigo-400" />
+                <div
+                  className={`flex items-center justify-between gap-2 pt-1 border-t ${
+                    isDark ? 'border-zinc-800/80' : 'border-slate-200'
+                  }`}
+                >
+                  <span
+                    className={`text-[11px] font-semibold flex items-center gap-1.5 ${
+                      isDark ? 'text-zinc-300' : 'text-slate-700'
+                    }`}
+                  >
+                    <FrameCorners size={13} className="text-indigo-500" />
                     Ajustement :
                   </span>
-                  <div className="grid grid-cols-2 gap-1 bg-zinc-900 p-0.5 rounded-lg border border-zinc-800">
+                  <div
+                    className={`grid grid-cols-2 gap-1 p-0.5 rounded-lg border ${
+                      isDark
+                        ? 'bg-zinc-900 border-zinc-800'
+                        : 'bg-white border-slate-200'
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => handleFitModeChange('contain')}
                       className={`px-2 py-1 rounded text-[10px] font-semibold transition-all ${
                         currentFitMode === 'contain'
                           ? 'bg-indigo-600 text-white shadow-xs'
-                          : 'text-zinc-400 hover:text-white'
+                          : isDark
+                          ? 'text-zinc-400 hover:text-white'
+                          : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       Proportions
@@ -331,7 +420,9 @@ export function SidebarControls({
                       className={`px-2 py-1 rounded text-[10px] font-semibold transition-all ${
                         currentFitMode === 'cover'
                           ? 'bg-indigo-600 text-white shadow-xs'
-                          : 'text-zinc-400 hover:text-white'
+                          : isDark
+                          ? 'text-zinc-400 hover:text-white'
+                          : 'text-slate-500 hover:text-slate-900'
                       }`}
                     >
                       Remplir
@@ -343,7 +434,11 @@ export function SidebarControls({
 
             {!imageRecto && !imageVerso && (
               <div className="flex flex-col gap-1.5 mt-2">
-                <span className="text-[10px] font-medium text-zinc-500">
+                <span
+                  className={`text-[10px] font-medium ${
+                    isDark ? 'text-zinc-500' : 'text-slate-400'
+                  }`}
+                >
                   Ou charger une démo complète Recto/Verso :
                 </span>
                 <div className="flex flex-wrap gap-1.5">
@@ -352,7 +447,11 @@ export function SidebarControls({
                       key={demo.id}
                       type="button"
                       onClick={() => onSelectDemoCard(demo)}
-                      className="px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-indigo-500/40 hover:bg-zinc-800 flex items-center gap-1.5 transition-all"
+                      className={`px-2.5 py-1 rounded-lg border text-[11px] font-medium flex items-center gap-1.5 transition-all ${
+                        isDark
+                          ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white hover:border-indigo-500/40 hover:bg-zinc-800'
+                          : 'bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-950 hover:border-indigo-300 hover:bg-slate-100'
+                      }`}
                     >
                       <Sparkle size={10} className="text-amber-400" />
                       {demo.title}
@@ -364,26 +463,44 @@ export function SidebarControls({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800/60 w-full" />
+        <div className={`h-px w-full ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} />
 
         {/* ── Section 3: Disposition & Alignement sur Papier A4 ── */}
         <div className="flex flex-col gap-3">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-            <AlignCenterHorizontal size={14} className="text-indigo-400" />
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+              isDark ? 'text-zinc-400' : 'text-slate-500'
+            }`}
+          >
+            <AlignCenterHorizontal size={14} className="text-indigo-500" />
             Positionnement sur Papier A4
           </span>
 
           {/* Horizontal Align Buttons */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-medium text-zinc-500">Alignement Horizontal :</span>
-            <div className="grid grid-cols-3 gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+            <span
+              className={`text-[10px] font-medium ${
+                isDark ? 'text-zinc-500' : 'text-slate-400'
+              }`}
+            >
+              Alignement Horizontal :
+            </span>
+            <div
+              className={`grid grid-cols-3 gap-1.5 p-1 rounded-xl border ${
+                isDark
+                  ? 'bg-zinc-950 border-zinc-800'
+                  : 'bg-slate-100 border-slate-200'
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => onSettingsChange({ ...settings, alignX: 'left' })}
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignX === 'left'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignLeft size={13} />
@@ -395,7 +512,9 @@ export function SidebarControls({
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignX === 'center'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignCenterHorizontal size={13} />
@@ -407,7 +526,9 @@ export function SidebarControls({
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignX === 'right'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignRight size={13} />
@@ -418,15 +539,29 @@ export function SidebarControls({
 
           {/* Vertical Align Buttons */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-medium text-zinc-500">Alignement Vertical :</span>
-            <div className="grid grid-cols-3 gap-1.5 bg-zinc-950 p-1 rounded-xl border border-zinc-800">
+            <span
+              className={`text-[10px] font-medium ${
+                isDark ? 'text-zinc-500' : 'text-slate-400'
+              }`}
+            >
+              Alignement Vertical :
+            </span>
+            <div
+              className={`grid grid-cols-3 gap-1.5 p-1 rounded-xl border ${
+                isDark
+                  ? 'bg-zinc-950 border-zinc-800'
+                  : 'bg-slate-100 border-slate-200'
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => onSettingsChange({ ...settings, alignY: 'top' })}
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignY === 'top'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignTop size={13} />
@@ -438,7 +573,9 @@ export function SidebarControls({
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignY === 'center'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignCenterVertical size={13} />
@@ -450,7 +587,9 @@ export function SidebarControls({
                 className={`py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all ${
                   settings.alignY === 'bottom'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'text-zinc-400 hover:text-white'
+                    : isDark
+                    ? 'text-zinc-400 hover:text-white'
+                    : 'text-slate-600 hover:text-slate-950'
                 }`}
               >
                 <AlignBottom size={13} />
@@ -462,8 +601,14 @@ export function SidebarControls({
           {/* Slots Management */}
           <div className="flex flex-col gap-2 mt-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-medium text-zinc-500">Gestion des emplacements sur l'A4 :</span>
-              <span className="text-[10px] font-mono text-indigo-400">
+              <span
+                className={`text-[10px] font-medium ${
+                  isDark ? 'text-zinc-500' : 'text-slate-400'
+                }`}
+              >
+                Gestion des emplacements sur l'A4 :
+              </span>
+              <span className="text-[10px] font-mono text-indigo-500 font-bold">
                 {totalSlots - settings.disabledSlots.length} / {totalSlots} actifs
               </span>
             </div>
@@ -471,30 +616,42 @@ export function SidebarControls({
               <button
                 type="button"
                 onClick={handleEnableAllSlots}
-                className="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-emerald-500/40 flex items-center justify-center gap-1.5 transition-colors"
+                className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                  isDark
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white hover:border-emerald-500/40'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-950 hover:border-emerald-500'
+                }`}
               >
-                <CheckSquare size={13} className="text-emerald-400" />
+                <CheckSquare size={13} className="text-emerald-500" />
                 Tout activer
               </button>
               <button
                 type="button"
                 onClick={handleDisableAllSlots}
-                className="px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-medium text-zinc-300 hover:text-white hover:border-rose-500/40 flex items-center justify-center gap-1.5 transition-colors"
+                className={`px-2.5 py-1.5 rounded-lg border text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                  isDark
+                    ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:text-white hover:border-rose-500/40'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:text-slate-950 hover:border-rose-500'
+                }`}
               >
-                <Square size={13} className="text-rose-400" />
+                <Square size={13} className="text-rose-500" />
                 Tout désactiver
               </button>
             </div>
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800/60 w-full" />
+        <div className={`h-px w-full ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} />
 
         {/* ── Section 4: Dimensions de la carte ── */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <ArrowsOutLineHorizontal size={14} className="text-indigo-400" />
+            <span
+              className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+                isDark ? 'text-zinc-400' : 'text-slate-500'
+              }`}
+            >
+              <ArrowsOutLineHorizontal size={14} className="text-indigo-500" />
               Dimensions d'une carte (mm)
             </span>
             <button
@@ -507,7 +664,7 @@ export function SidebarControls({
                   presetId: 'custom',
                 })
               }
-              className="text-[10px] text-indigo-400 hover:text-indigo-300 font-mono underline"
+              className="text-[10px] text-indigo-500 hover:underline font-mono"
             >
               Inverser L × H
             </button>
@@ -539,12 +696,16 @@ export function SidebarControls({
           </div>
         </div>
 
-        <div className="h-px bg-zinc-800/60 w-full" />
+        <div className={`h-px w-full ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} />
 
         {/* ── Section 5: Espacement & Marges ── */}
         <div className="flex flex-col gap-4">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-            <ArrowsOutLineVertical size={14} className="text-indigo-400" />
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+              isDark ? 'text-zinc-400' : 'text-slate-500'
+            }`}
+          >
+            <ArrowsOutLineVertical size={14} className="text-indigo-500" />
             Marges & Espacements
           </span>
 
@@ -579,24 +740,42 @@ export function SidebarControls({
           />
         </div>
 
-        <div className="h-px bg-zinc-800/60 w-full" />
+        <div className={`h-px w-full ${isDark ? 'bg-zinc-800/60' : 'bg-slate-200'}`} />
 
         {/* ── Section 6: Options d'impression ── */}
         <div className="flex flex-col gap-3">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-            <Scissors size={14} className="text-indigo-400" />
+          <span
+            className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 ${
+              isDark ? 'text-zinc-400' : 'text-slate-500'
+            }`}
+          >
+            <Scissors size={14} className="text-indigo-500" />
             Options d'Impression & Repères
           </span>
 
           {/* Numéros d'emplacement switch */}
-          <label className="flex items-center justify-between p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 cursor-pointer hover:border-zinc-700 transition-colors">
+          <label
+            className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+              isDark
+                ? 'bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700'
+                : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+            }`}
+          >
             <div className="flex items-center gap-2.5">
-              <Hash size={16} className="text-zinc-400" />
+              <Hash size={16} className={isDark ? 'text-zinc-400' : 'text-slate-500'} />
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-zinc-200">
+                <span
+                  className={`text-xs font-medium ${
+                    isDark ? 'text-zinc-200' : 'text-slate-800'
+                  }`}
+                >
                   Numéros d'emplacements
                 </span>
-                <span className="text-[10px] text-zinc-500">
+                <span
+                  className={`text-[10px] ${
+                    isDark ? 'text-zinc-500' : 'text-slate-400'
+                  }`}
+                >
                   Affiche #1, #2, #3 sur l'écran
                 </span>
               </div>
@@ -615,7 +794,7 @@ export function SidebarControls({
               />
               <div
                 className={`w-9 h-5 rounded-full transition-colors duration-200 ${
-                  settings.showNumbers ? 'bg-indigo-600' : 'bg-zinc-800'
+                  settings.showNumbers ? 'bg-indigo-600' : isDark ? 'bg-zinc-800' : 'bg-slate-300'
                 }`}
               />
               <div
@@ -627,14 +806,28 @@ export function SidebarControls({
           </label>
 
           {/* Crop marks switch */}
-          <label className="flex items-center justify-between p-3 rounded-xl bg-zinc-950/60 border border-zinc-800/80 cursor-pointer hover:border-zinc-700 transition-colors">
+          <label
+            className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+              isDark
+                ? 'bg-zinc-950/60 border-zinc-800/80 hover:border-zinc-700'
+                : 'bg-slate-50 border-slate-200 hover:border-slate-300'
+            }`}
+          >
             <div className="flex items-center gap-2.5">
-              <Scissors size={16} className="text-zinc-400" />
+              <Scissors size={16} className={isDark ? 'text-zinc-400' : 'text-slate-500'} />
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-zinc-200">
+                <span
+                  className={`text-xs font-medium ${
+                    isDark ? 'text-zinc-200' : 'text-slate-800'
+                  }`}
+                >
                   Traits de coupe
                 </span>
-                <span className="text-[10px] text-zinc-500">
+                <span
+                  className={`text-[10px] ${
+                    isDark ? 'text-zinc-500' : 'text-slate-400'
+                  }`}
+                >
                   Repères d'angle pour le découpage
                 </span>
               </div>
@@ -653,7 +846,7 @@ export function SidebarControls({
               />
               <div
                 className={`w-9 h-5 rounded-full transition-colors duration-200 ${
-                  settings.showCropMarks ? 'bg-indigo-600' : 'bg-zinc-800'
+                  settings.showCropMarks ? 'bg-indigo-600' : isDark ? 'bg-zinc-800' : 'bg-slate-300'
                 }`}
               />
               <div
